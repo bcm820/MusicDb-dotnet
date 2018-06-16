@@ -6,8 +6,8 @@ namespace MusicDb.Models {
 
     // Db Tables
     public DbSet<User> Users { get; set; }
-    // public DbSet<Artists> Artists { get; set; }
-    // public DbSet<Songs> Songs { get; set; }
+    public DbSet<Artist> Artists { get; set; }
+    public DbSet<Song> Songs { get; set; }
 
     // Context calls parent class' constructor
     // passing in the "options" parameter

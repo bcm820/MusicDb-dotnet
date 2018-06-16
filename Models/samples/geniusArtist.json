@@ -2,6 +2,7 @@
   "meta": { "status": 200 },
   "response": {
     "artist": {
+      "id": 16775,
       "alternate_names": [
         "Sia K. I. Furler",
         "Sia Furler. Sia Kate Isobelle Furler"
@@ -160,7 +161,6 @@
       "followers_count": 800,
       "header_image_url":
         "https://images.genius.com/cb40ff6ba23119fdb3ec69073be7cf34.1000x427x1.jpg",
-      "id": 16775,
       "image_url":
         "https://images.genius.com/6bcd2bd1708eeae7282400f1e4be633f.600x600x1.jpg",
       "instagram_name": "SiaMusic",
