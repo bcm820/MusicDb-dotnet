@@ -68,7 +68,7 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `MusicDB`.`Users_has_Artists`
+-- Table `MusicDB`.`ArtistLike`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `MusicDB`.`Users_has_Artists` (
   `UserId` INT NOT NULL,
