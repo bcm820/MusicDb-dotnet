@@ -7,12 +7,12 @@ namespace MusicDb.Models {
     public string Username { get; set; }
     public string Password { get; set; }
 
-    public List<Artist> Artists { get; set; }
-    public List<Song> Songs { get; set; }
+    public List<ArtistLike> Artists { get; set; }
+    public List<SongLike> Songs { get; set; }
 
     public User() {
-      Artists = new List<Artist>();
-      Songs = new List<Song>();
+      Artists = new List<ArtistLike>();
+      Songs = new List<SongLike>();
     }
 
   }
