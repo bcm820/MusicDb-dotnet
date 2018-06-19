@@ -10,7 +10,7 @@ namespace MusicDb.Controllers {
     private readonly ApiProxier Proxy;
     public ApiController(ApiProxier proxy) => Proxy = proxy;
 
-    [Route("api/search/{text}")]
+    [Route("api/songs/{text}")]
     async public Task<IActionResult> GetSearchResults(string text) {
       var Url = $"/search?q={text}&sort=popularity&per_page=50";
       var ResponseString = await Proxy.GetAsync("Search", Url);

@@ -41,7 +41,7 @@ namespace MusicDb.Controllers {
     // "dynamic" (bypass compile time type check and assume any op works),
     // allowing free access to deep-nested values via dot notation.
 
-    [Route("search/{text}")] // TODO: Change to POST for form-data
+    [Route("songs/{text}")] // TODO: Change to POST for form-data
     public IActionResult ShowSearchResults(string text) {
       var ResponseString = HttpContext.Session.GetString($"search{text}");
       if (ResponseString == null)
@@ -53,10 +53,10 @@ namespace MusicDb.Controllers {
       dynamic SongObjects = ResponseObj.response.hits;
       var Songs = new List<Song>();
       foreach (var song in SongObjects) Songs.Add(new Song {
-        Id = song.id,
-        Title = song.title_with_featured,
-        Url = song.url,
-        ArtistName = song.primary_artist.name
+        Id = song.result.id,
+        Title = song.result.title_with_featured,
+        Url = song.result.url,
+        ArtistName = song.result.primary_artist.name
       });
       // return View("results");
       return Json(Songs);
@@ -84,8 +84,8 @@ namespace MusicDb.Controllers {
         Twitter = ArtistData.twitter_name,
         Facebook = ArtistData.facebook_name
       };
-      Db.Artists.Add(Artist);
-      Db.SaveChanges();
+      // Db.Artists.Add(Artist);
+      // Db.SaveChanges();
       // return View("artist");
       return Json(Artist);
     }
@@ -113,8 +113,8 @@ namespace MusicDb.Controllers {
             ArtistName = songData.primary_artist.name
           };
           Songs.Add(Song);
-          // TODO: Store artist before storing song.
-          // Song depends on having an actual artist stored.
+          // TODO: Assign artist to songs
+          // Only save songs after grabbing artist as well.
           // Db.Songs.Add(Song);
           // Db.SaveChanges();
         }
