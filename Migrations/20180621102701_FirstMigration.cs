@@ -19,9 +19,7 @@ namespace MusicDb.Migrations
                     Name = table.Column<string>(nullable: true),
                     Url = table.Column<string>(nullable: true),
                     Image = table.Column<string>(nullable: true),
-                    Genius = table.Column<string>(nullable: true),
                     Instagram = table.Column<string>(nullable: true),
-                    Facebook = table.Column<string>(nullable: true),
                     Twitter = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -56,6 +54,7 @@ namespace MusicDb.Migrations
                     Title = table.Column<string>(nullable: true),
                     Url = table.Column<string>(nullable: true),
                     ArtistName = table.Column<string>(nullable: true),
+                    ArtistUID = table.Column<long>(nullable: false),
                     ArtistId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
@@ -77,8 +76,8 @@ namespace MusicDb.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<long>(nullable: false),
-                    ArtistId = table.Column<long>(nullable: false)
+                    UserId = table.Column<long>(nullable: true),
+                    ArtistId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,13 +87,13 @@ namespace MusicDb.Migrations
                         column: x => x.ArtistId,
                         principalTable: "Artists",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ArtistLikes_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -105,8 +104,7 @@ namespace MusicDb.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<long>(nullable: false),
-                    ArtistId = table.Column<long>(nullable: false),
+                    UserId = table.Column<long>(nullable: true),
                     SongId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
@@ -123,7 +121,7 @@ namespace MusicDb.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

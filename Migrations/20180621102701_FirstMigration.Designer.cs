@@ -9,7 +9,7 @@ using MusicDb.Models;
 namespace MusicDb.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20180618121541_FirstMigration")]
+    [Migration("20180621102701_FirstMigration")]
     partial class FirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,10 +25,6 @@ namespace MusicDb.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Facebook");
-
-                    b.Property<string>("Genius");
 
                     b.Property<string>("Image");
 
@@ -52,13 +48,13 @@ namespace MusicDb.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long>("ArtistId");
+                    b.Property<long?>("ArtistId");
 
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<DateTime>("UpdatedAt");
 
-                    b.Property<long>("UserId");
+                    b.Property<long?>("UserId");
 
                     b.HasKey("Id");
 
@@ -77,6 +73,8 @@ namespace MusicDb.Migrations
                     b.Property<long?>("ArtistId");
 
                     b.Property<string>("ArtistName");
+
+                    b.Property<long>("ArtistUID");
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -98,15 +96,13 @@ namespace MusicDb.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long>("ArtistId");
-
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<long?>("SongId");
 
                     b.Property<DateTime>("UpdatedAt");
 
-                    b.Property<long>("UserId");
+                    b.Property<long?>("UserId");
 
                     b.HasKey("Id");
 
@@ -139,13 +135,11 @@ namespace MusicDb.Migrations
                 {
                     b.HasOne("MusicDb.Models.Artist", "Artist")
                         .WithMany("Likes")
-                        .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ArtistId");
 
                     b.HasOne("MusicDb.Models.User", "User")
                         .WithMany("Artists")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("MusicDb.Models.Song", b =>
@@ -163,8 +157,7 @@ namespace MusicDb.Migrations
 
                     b.HasOne("MusicDb.Models.User", "User")
                         .WithMany("Songs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

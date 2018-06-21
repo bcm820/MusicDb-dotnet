@@ -15,8 +15,13 @@ namespace MusicDb.Models {
     // passing in the "options" parameter
     public Context(DbContextOptions<Context> options) : base(options) { }
 
-    // This can be used to override the FluentApi
+    // This can be used to add additional config options
+    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+      options.EnableSensitiveDataLogging();
+
+    // OnModelCreating can be used to override the FluentApi
     // protected override void OnModelCreating(ModelBuilder mb) {}
+
   }
 
 }
