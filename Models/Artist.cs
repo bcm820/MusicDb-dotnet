@@ -7,9 +7,7 @@ namespace MusicDb.Models {
     public string Name { get; set; }
     public string Url { get; set; }
     public string Image { get; set; }
-    public string Genius { get; set; }
     public string Instagram { get; set; }
-    public string Facebook { get; set; }
     public string Twitter { get; set; }
     public List<Song> Songs { get; set; }
     public List<ArtistLike> Likes { get; set; }

@@ -29,7 +29,7 @@ Useful Annotations and Examples:
 [EmailAddress] - Field must contain an @ symbol, followed by a word and a period.
 [DataType(DataType.Password)] - Ensures field conforms to specific DataType
 
-PostGres Migrations:
+Migrations:
 dotnet ef migrations add FirstMigration - Creates migration. Requires one model in advance.
 dotnet ef database update - Applies migrations much like Django's "migrate" command.
 */
