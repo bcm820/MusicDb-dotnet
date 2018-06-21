@@ -1,0 +1,34 @@
+@{
+
+  ViewBag.Title = "Index";
+  Layout = "layout.cshtml";
+  Func<object,bool> notEmpty = str => str != null && str.ToString().Length > 1;
+  var artist = ViewBag.Artist;
+  var ProfileLink = $"/artists/{artist.Id}/profile";
+  var InstagramLink = $"http://www.instagram.com/{artist.Instagram}";
+  var TwitterLink = $"http://www.twitter.com/{artist.Twitter}";
+
+  <div class="row p-3">
+    <div class="col-sm-12 px-3">
+    <h2>Artist Page (@artist.Name)</h2>
+    <p><a href="/">Back</a></p>
+    </div>
+  </div>
+
+  <div class="row p-3">
+
+    <div class="col-sm-6 px-3">
+      <div>
+        <h4>@artist.Name</h4>
+        <p>
+          <img src=@artist.Image width=200 height=200 /><br/>
+          <a href=@artist.Url>Genius</a>
+          @if (notEmpty(artist.Instagram)) { <br/><a href=@InstagramLink>Instagram</a> }
+          @if (notEmpty(artist.Twitter)) { <br/><a href=@TwitterLink>Twitter</a> }
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+}
