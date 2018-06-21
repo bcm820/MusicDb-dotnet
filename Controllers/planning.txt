@@ -1,0 +1,12 @@
+
+Views:
+1. Index: Lists all artists stored in DB
+2. Search results: Lists all API results from search string
+3. Artist profile: Lists DB artist info
+
+Later:
+1. Add Db songs to artist profile
+2. Add Twitter and Instagram data to artist profile
+3. Setup simple login/reg
+4. Only store artists and songs in DB via User likes (learn auth)
+5. Index: Add DB songs to index

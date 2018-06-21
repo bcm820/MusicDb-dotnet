@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using MusicDb.Utilities;
 
 using System;
 using System.Dynamic;
@@ -15,33 +16,15 @@ namespace MusicDb.Controllers {
 
   public class ArtistController : Controller {
 
-    // Inject EF Core DB context
-    // Usage: Db.{Model}.ToList();
     private Context Db;
-
-    public ArtistController(Context context) {
-      Db = context;
-    }
-
-    [Route("")]
-    public IActionResult Index() {
-      ViewBag["artists"] = Db.Artists.OrderBy(artist => artist.Name).ToList();
-      return View();
-    }
-
-    // 1. Get artist id
-    // 2. Check db for artist
-    // 3. If none found, fetch from API and convert to artist class
-    // 4. Render on page
-    // 5. TODO: If user likes, store in DB
-    // 6. TODO: If user likes a song, store in DB
+    public ArtistController(Context context) => Db = context;
 
     // Data fetched from API proxy (stored in session in ApiController)
-    // will be deserialized into an ExpandoObject which supports type
-    // "dynamic" (bypass compile time type check and assume any op works),
-    // allowing free access to deep-nested values via dot notation.
+    // will be deserialized into an ExpandoObject which is a unique C#
+    // type that bypasses compile time type checks (assumes any op works).
+    // This allows free access to deep-nested values via dot notation.
 
-    [Route("songs/{text}")] // TODO: Change to POST for form-data
+    [Route("songs")]
     public IActionResult ShowSearchResults(string text) {
       var ResponseString = HttpContext.Session.GetString($"search{text}");
       if (ResponseString == null)
@@ -56,16 +39,25 @@ namespace MusicDb.Controllers {
         Id = song.result.id,
         Title = song.result.title_with_featured,
         Url = song.result.url,
-        ArtistName = song.result.primary_artist.name
+        ArtistName = song.result.primary_artist.name,
+        ArtistUID = song.result.primary_artist.id
       });
-      // return View("results");
-      return Json(Songs);
+      HttpContext.Session.SetDynamic($"search{text}", Songs);
+      return RedirectToAction("Results", "View", new { text = text });
     }
 
     [Route("artists/{id}")]
     public IActionResult ShowArtist(string id) {
-      var DbArtist = Db.Artists.SingleOrDefault(a => a.Id == Convert.ToInt64(id));
-      if (DbArtist != null) return Json(DbArtist);
+      var DbArtists = Db.Artists
+        .Where(a => a.Id == Convert.ToInt64(id))
+        .Include(a => a.Songs)
+        .Include(a => a.Likes)
+        .ToList();
+      if (DbArtists.Count != 0) {
+        var FoundArtist = DbArtists.Single();
+        HttpContext.Session.SetDynamic($"artistprofile{id}", FoundArtist);
+        return RedirectToAction("Artist", "View", new { id = id });
+      }
       var ResponseString = HttpContext.Session.GetString($"artist{id}");
       if (ResponseString == null)
         return RedirectToAction("GetArtistInfo", "Api", new { id = id });
@@ -76,18 +68,15 @@ namespace MusicDb.Controllers {
       var ArtistData = ResponseObj.response.artist;
       var Artist = new Artist {
         Id = ArtistData.id,
-        Name = ArtistData.user.name,
-        Image = ArtistData.image_url,
+        Name = ArtistData.name,
         Url = ArtistData.url,
-        Genius = ArtistData.user.login,
+        Image = ArtistData.image_url,
         Instagram = ArtistData.instagram_name,
-        Twitter = ArtistData.twitter_name,
-        Facebook = ArtistData.facebook_name
+        Twitter = ArtistData.twitter_name
       };
-      // Db.Artists.Add(Artist);
-      // Db.SaveChanges();
-      // return View("artist");
-      return Json(Artist);
+      Db.Artists.Add(Artist);
+      Db.SaveChanges();
+      return RedirectToAction("ShowArtist", new { id = id });
     }
 
     [Route("artists/{id}/songs")]
@@ -103,24 +92,31 @@ namespace MusicDb.Controllers {
       var Songs = new List<Song>();
       foreach (var songData in SongObjects) {
         long songId = songData.id;
-        var DbSong = Db.Songs.SingleOrDefault(s => s.Id == songId);
-        if (DbSong != null) Songs.Add(DbSong);
+        // var DbArtist = Db.Artists
+        //   .Where(a => a.Id == songData.primary_artist.id)
+        //   .Include(a => a.Songs)
+        //   .ToList();
+        var DbSongs = Db.Songs
+          .Where(s => s.Id == songId)
+          .Include(s => s.Artist)
+          .Include(s => s.Likes)
+          .ToList();
+        if (DbSongs.Count != 0) Songs.Add(DbSongs.Single());
         else {
           var Song = new Song {
             Id = songData.id,
             Title = songData.title_with_featured,
             Url = songData.url,
-            ArtistName = songData.primary_artist.name
+            ArtistName = songData.primary_artist.name,
+            ArtistUID = songData.primary_artist.id
           };
           Songs.Add(Song);
-          // TODO: Assign artist to songs
-          // Only save songs after grabbing artist as well.
-          // Db.Songs.Add(Song);
-          // Db.SaveChanges();
+          Db.Songs.Add(Song);
+          Db.SaveChanges();
         }
       }
-      // return View("songs");
-      return Json(Songs);
+      return View("songs");
+      // return Json(Songs);
     }
 
   }
