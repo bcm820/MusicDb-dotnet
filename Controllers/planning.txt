@@ -4,6 +4,9 @@ Views:
 2. Search results: Lists all API results from search string
 3. Artist profile: Lists DB artist info
 
+Bugs:
+1. When typing "test" into search input, response returned from resource is malformed...
+
 Later:
 1. Add Db songs to artist profile
 2. Add Twitter and Instagram data to artist profile

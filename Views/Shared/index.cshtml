@@ -13,32 +13,32 @@
   <div class="row p-3">
 
     <div class="col-sm-6 px-3">
-
       @foreach (var artist in ViewBag.Artists) {
-
         var ProfileLink = $"/artists/{artist.Id}/profile";
-        var InstagramLink = $"http://www.instagram.com/{artist.Instagram}";
-        var TwitterLink = $"http://www.twitter.com/{artist.Twitter}";
-
-        <div>
-          <h4>@artist.Name</h4>
-          <p>
-            <a href="@ProfileLink"><img src=@artist.Image width=100 height=100 /></a><br/>
-            <a href=@artist.Url>Genius</a>
-            @if (notEmpty(artist.Instagram)) { <br/><a href=@InstagramLink>Instagram</a> }
-            @if (notEmpty(artist.Twitter)) { <br/><a href=@TwitterLink>Twitter</a> }
-          </p>
-        </div>
-
+        <a href="@ProfileLink">
+          <img src=@artist.Image
+            title="@artist.Name" 
+            width=100
+            height=100
+          />
+        </a>
       }
     </div>
 
-    <div class="col-sm-6 px-3">
-        <form action="songs" method="get">
-            <input type="text" name="text"/>
-            <button type="submit">Search</button>
+    <div class="col-sm-3 px-3">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control">
+        <form action="/songs" method="get">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="submit">
+            Search
+          </button>
+        </div>
         </form>
+      </div>
     </div>
+
+    <div class="col-sm-3 px-3">&nbsp;</div>
 
   </div>
 
