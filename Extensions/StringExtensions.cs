@@ -1,6 +1,6 @@
 using System;
 
-namespace MusicDb.Utilities {
+namespace MusicDb.Extensions {
 
   public static class StringExtensions {
     public static bool ContainsIgnoreCase(this string source, string value) {

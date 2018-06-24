@@ -10,18 +10,20 @@ using Newtonsoft.Json.Converters;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+
 using MusicDb.Models;
-using MusicDb.Utilities;
+using MusicDb.Extensions;
+using MusicDb.Services;
 
 namespace MusicDb.Controllers {
 
   public class ArtistController : Controller {
 
     private Context Db;
-    private ArtistProxy Proxy;
-    public ArtistController(Context context, ArtistProxy proxy) {
+    private ApiService Api;
+    public ArtistController(Context context, ApiService api) {
       Db = context;
-      Proxy = proxy;
+      Api = api;
     }
 
     static List<Song> GetSongsList(dynamic songs, bool results) {
@@ -47,7 +49,7 @@ namespace MusicDb.Controllers {
     async public Task<IActionResult> ShowSearchResults(string text) {
 
       // Get song data from search API call
-      var ResponseString = await Proxy.GetSearchResults(text);
+      var ResponseString = await Api.GetSearchResults(text);
 
       // Parse into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
@@ -58,7 +60,6 @@ namespace MusicDb.Controllers {
       // Map song data to Song model, map to list, store in session
       List<Song> Songs = GetSongsList(ResponseObj.response.hits, true);
       HttpContext.Session.SetDynamic($"search{text}", Songs);
-
       return RedirectToAction("Results", "View", new { text = text });
     }
 
@@ -78,7 +79,7 @@ namespace MusicDb.Controllers {
       }
 
       // Get data from artist API call
-      var ResponseString = await Proxy.GetArtistInfo(id);
+      var ResponseString = await Api.GetArtistInfo(id);
 
       // Parse into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
@@ -107,7 +108,7 @@ namespace MusicDb.Controllers {
     async public Task<IActionResult> ShowArtistSongs(string id) {
 
       // Get data from artist's songs API call
-      var ResponseString = await Proxy.GetArtistSongs(id);
+      var ResponseString = await Api.GetArtistSongs(id);
 
       // Deserialize into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>

@@ -1,21 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using MusicDb.Utilities;
-
 using Microsoft.EntityFrameworkCore;
+
 using System.Linq;
+using System.Threading.Tasks;
+
+using MusicDb.Services;
 using MusicDb.Models;
+using MusicDb.Extensions;
 
 namespace MusicDb.Controllers {
 
   public class ViewController : Controller {
 
-    private Context Db;
-    public ViewController(Context context) => Db = context;
+    private Context _context;
+    private ArtistService _as;
+
+    public ViewController(Context context, ArtistService artistService) {
+      _context = context;
+      _as = artistService;
+    }
 
     [Route("")]
     public IActionResult Index() {
-      ViewBag.Artists = Db.Artists.OrderBy(artist => artist.Name).ToList();
+      ViewBag.Artists = _context.Artists.OrderBy(artist => artist.Name).ToList();
       ViewBag.User = HttpContext.Session.GetString("username");
       return View();
     }
@@ -30,30 +38,23 @@ namespace MusicDb.Controllers {
         Username = account.Username,
         Password = account.Password
       };
-      Db.Users.Add(NewUser);
-      Db.SaveChanges();
+      _context.Users.Add(NewUser);
+      _context.SaveChanges();
       HttpContext.Session.SetString("username", NewUser.Username);
       return RedirectToAction("Index");
     }
 
     [Route("results/{text}")]
-    public IActionResult Results(string text) {
-      var Results = HttpContext.Session.GetDynamic($"search{text}");
-      if (Results == null)
-        return RedirectToAction("ShowSearchResults", "Artist", new { text = text });
-      ViewBag.Results = Results;
+    async public Task<IActionResult> Results(string text) {
+      ViewBag.Results = await _as.ShowSearchResults(text);
       return View("results");
     }
 
     // TODO: Fetch Twitter & Instagram data 
     [Route("artists/{id}/profile")]
-    public IActionResult Artist(string id) {
-      var Artist = HttpContext.Session.GetDynamic($"artistprofile{id}");
-      var Songs = HttpContext.Session.GetDynamic($"artistsongs{id}");
-      if (Artist == null)
-        return RedirectToAction("ShowArtist", "Artist", new { id = id });
-      if (Songs == null)
-        return RedirectToAction("ShowArtistSongs", "Artist", new { id = id });
+    async public Task<IActionResult> Artist(string id) {
+      var Artist = await _as.ShowArtist(id);
+      var Songs = await _as.ShowArtistSongs(id);
       ViewBag.Artist = Artist;
       ViewBag.Songs = Songs;
       return View("artist");

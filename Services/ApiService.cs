@@ -5,16 +5,36 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace MusicDb.Utilities {
+namespace MusicDb.Services {
 
-  public class ApiProxier {
+  public class ApiService {
 
-    // Inject config from appsettings.json which stores external API data.
+    // ApiService is a service used for making async API calls.
+    // Responses are returned in their original string format for parsing.
+
+    // Inject appsettings config which stores secret API data.
     private readonly IConfiguration Config;
-    public ApiProxier(IConfiguration config) => Config = config;
+    public ApiService(IConfiguration config) => Config = config;
+
+    // Fetch data from Genius, Twitter, Instagram, etc.
+
+    async public Task<string> GetSearchResults(string text) {
+      var Url = $"/search?q={text}&sort=popularity&per_page=50";
+      return await GetAsync("Search", Url);
+    }
+
+    async public Task<string> GetArtistInfo(string id) {
+      var Url = $"/artists/{id}";
+      return await GetAsync("Search", Url);
+    }
+
+    async public Task<string> GetArtistSongs(string id) {
+      var Url = $"/artists/{id}/songs?sort=popularity&per_page=50";
+      return await GetAsync("Search", Url);
+    }
 
     // Set request URI and optional bearer token from config.
-    public async Task<string> GetAsync(string service, string endpoint) {
+    async Task<string> GetAsync(string service, string endpoint) {
       var Client = new HttpClient();
       var Host = Config.GetValue<string>($"{service}:host");
       Client.BaseAddress = new Uri($"{Host}{endpoint}");

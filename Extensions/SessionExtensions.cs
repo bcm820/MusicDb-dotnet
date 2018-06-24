@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using MusicDb.Models;
 
-namespace MusicDb.Utilities {
+namespace MusicDb.Extensions {
 
   // SessionExtensions adds additional static methods to the Http.ISession class.
   public static class SessionExtensions {

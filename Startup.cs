@@ -5,8 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+
 using MusicDb.Models;
-using MusicDb.Utilities;
+using MusicDb.Services;
 
 namespace MusicDb {
 
@@ -34,8 +35,8 @@ namespace MusicDb {
 
       // Configure API proxier service with keys
       services.AddSingleton<IConfiguration>(Configuration.GetSection("ApiConfig"));
-      services.AddScoped<ApiProxier>();
-      services.AddScoped<ArtistProxy>();
+      services.AddScoped<ApiService>();
+      services.AddScoped<ArtistService>();
     }
 
     public void Configure(
