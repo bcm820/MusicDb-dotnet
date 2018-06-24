@@ -24,7 +24,7 @@ namespace MusicDb.Controllers {
 
     [HttpPost]
     [Route("register")]
-    public IActionResult RegisterPost(Account account) {
+    public IActionResult RegisterPost(AccountVM account) {
       if (!ModelState.IsValid) return RedirectToAction("RegisterGet");
       var NewUser = new User {
         Username = account.Username,
@@ -45,7 +45,7 @@ namespace MusicDb.Controllers {
       return View("results");
     }
 
-    // TODO: Fetch Twitter & Instagram data
+    // TODO: Fetch Twitter & Instagram data 
     [Route("artists/{id}/profile")]
     public IActionResult Artist(string id) {
       var Artist = HttpContext.Session.GetDynamic($"artistprofile{id}");

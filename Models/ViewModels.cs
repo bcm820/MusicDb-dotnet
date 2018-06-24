@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MusicDb.Models {
 
-  public class Account {
+  public class AccountVM {
 
     [Required]
     [MinLength(2)]
