@@ -35,7 +35,7 @@ namespace MusicDb.Controllers {
     }
 
     // Data fetched from API proxy (stored in session in ApiController)
-    // will be deserialized into an ExpandoObject which is a unique C#
+    // will be parsed into an ExpandoObject which is a unique C#
     // type that bypasses compile time type checks (assumes any op works).
     // This allows free access to deep-nested values via dot notation.
 
@@ -47,11 +47,11 @@ namespace MusicDb.Controllers {
       if (ResponseString == null)
         return RedirectToAction("GetSearchResults", "Api", new { text = text });
 
-      // Deserialize into ExpandoObject, check for an error
+      // Parse into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
         (ResponseString, new ExpandoObjectConverter());
       if (((IDictionary<string, object>)ResponseObj).ContainsKey("error"))
-        return Json("Unable to fulfill request.");
+        return Json(ResponseObj);
 
       // Map song data to Song model, map to list, store in session
       List<Song> Songs = GetSongsList(ResponseObj.response.hits, true);
@@ -80,11 +80,11 @@ namespace MusicDb.Controllers {
       if (ResponseString == null)
         return RedirectToAction("GetArtistInfo", "Api", new { id = id });
 
-      // Deserialize into ExpandoObject, check for an error
+      // Parse into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
         (ResponseString, new ExpandoObjectConverter());
       if (((IDictionary<string, object>)ResponseObj).ContainsKey("error"))
-        return Json("Unable to fulfill request.");
+        return Json(ResponseObj);
 
       // Map artist data to Artist model, store in DB
       // Then redirect to fetch artist songs
@@ -99,6 +99,7 @@ namespace MusicDb.Controllers {
       };
       Db.Artists.Add(Artist);
       Db.SaveChanges();
+      HttpContext.Session.SetDynamic($"artistprofile{id}", Artist);
       return RedirectToAction("GetArtistSongs", "Api", new { id = id });
     }
 
@@ -114,7 +115,7 @@ namespace MusicDb.Controllers {
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
         (ResponseString, new ExpandoObjectConverter());
       if (((IDictionary<string, object>)ResponseObj).ContainsKey("error"))
-        return Json("Unable to fulfill request.");
+        return Json(ResponseObj);
 
       // Map song data to Song model, map to list, store in session
       List<Song> Songs = GetSongsList(ResponseObj.response.songs, false);
