@@ -1,0 +1,53 @@
+@{
+  
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MusicDB - @ViewBag.Title</title>
+  <link rel="stylesheet" href="~/bootstrap.css"/>
+</head>
+
+<body>
+
+  <div class="row p-3">
+    <div class="col-sm-9 px-3">
+      @if (ViewBag.Title == "Index") {
+        <h2>Welcome to Music DB</h2>
+      } else {
+        <h2>@ViewBag.Title</h2>
+      }
+    </div>
+    <div class="col-sm-3 px-5" style="text-align: right">
+      @if (ViewBag.Title == "Index") {
+        <a href="/register">Register</a>
+      } else {
+        <a href="/">Back to Index</a>
+      }
+    </div>
+  </div>
+
+  <div class="row p-3">
+    @RenderBody()
+    <div class="col-sm-3 px-3">
+      <div class="input-group mb-3">
+        <form action="/songs" method="GET">
+          <div class="input-group-append">
+            <input type="text" name="text" class="form-control"/>
+            <input type="submit" value="Search" class="btn btn-outline-secondary"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<script src="~/route.js"></script>
+
+</html>
+
+}

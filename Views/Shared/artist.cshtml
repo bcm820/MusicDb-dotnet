@@ -1,48 +1,32 @@
 @{
 
-  ViewBag.Title = "Index";
-  Layout = "layout.cshtml";
-  Func<object,bool> notEmpty = str => str != null && str.ToString().Length > 1;
-  var artist = ViewBag.Artist;
-  var ProfileLink = $"/artists/{artist.Id}/profile";
-  var InstagramLink = $"http://www.instagram.com/{artist.Instagram}";
-  var TwitterLink = $"http://www.twitter.com/{artist.Twitter}";
+  ViewBag.Title = $"Artist Page: {ViewBag.Artist.Name}";
+  Layout = "_layout.cshtml";
 
-  <div class="row p-3">
-    <div class="col-sm-12 px-3">
-    <h2>@artist.Name</h2>
-    </div>
+  var Artist = ViewBag.Artist;
+  var Songs = ViewBag.Songs;
+  
+  Func<object,bool> notEmpty = str => str != null && str.ToString().Length > 1;
+  var ProfileLink = $"/artists/{Artist.Id}/profile";
+  var InstagramLink = $"http://www.instagram.com/{Artist.Instagram}";
+  var TwitterLink = $"http://www.twitter.com/{Artist.Twitter}";
+
+  <div class="col-sm-3 px-3">
+    <div><img src=@Artist.Image width="100%" /></div>
   </div>
 
-  <div class="row p-3">
+  <div class="col-sm-3 px-3">
+    <h4>Songs</h4>
+    @foreach (var song in Songs) {
+      <p><a href=@song.Url>@song.Title</a></p>
+    }
+  </div>
 
-    <div class="col-sm-6 px-3">
-      <div>
-        <p>
-          <img src=@artist.Image width="100%" /><br/>
-          <a href=@artist.Url>Genius</a>
-          @if (notEmpty(artist.Instagram)) { <br/><a href=@InstagramLink>Instagram</a> }
-          @if (notEmpty(artist.Twitter)) { <br/><a href=@TwitterLink>Twitter</a> }
-        </p>
-      </div>
-    </div>
-
-    <div class="col-sm-3 px-3">
-      <div class="input-group mb-3">
-        <input type="text" class="form-control">
-        <form action="/songs" method="get">
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="submit">
-            Search
-          </button>
-        </div>
-        </form>
-      </div>
-      <p><a href="/">Back</a></p>
-    </div>
-
-    <div class="col-sm-3 px-3">&nbsp;</div>
-
+  <div class="col-sm-3 px-3">
+    <h4>Links</h4>
+    <a href=@Artist.Url>Genius</a>
+    @if (notEmpty(Artist.Instagram)) { <br/><a href=@InstagramLink>Instagram</a> }
+    @if (notEmpty(Artist.Twitter)) { <br/><a href=@TwitterLink>Twitter</a> }
   </div>
 
 }

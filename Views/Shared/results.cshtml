@@ -1,28 +1,18 @@
 @{
 
-  ViewBag.Title = "Results";
-  Layout = "layout.cshtml";
+  ViewBag.Title = "Results Page";
+  Layout = "_layout.cshtml";
 
-  <div class="row p-3">
-    <div class="col-sm-12 px-3">
-    <h2>Results Page (songs)</h2>
-    <p><a href="/">Back</a></p>
-    </div>
+  <div class="col-sm-6 px-3">
+    @foreach (var song in ViewBag.Results) {
+      var ArtistLink = $"/artists/{song.ArtistUID}";
+      <p>
+        <a href=@song.Url>@song.Title</a><br/>
+        <a href=@ArtistLink>@song.ArtistName</a>
+      </p>
+    }
   </div>
 
-  <div class="row p-3">
-    <div class="col-sm-6 px-3">
-
-      @foreach (var song in ViewBag.Results) {
-        var ArtistLink = $"/artists/{song.ArtistUID}";
-        <div>
-          <p>
-            <a href=@ArtistLink>@song.ArtistName</a> - <a href=@song.Url>@song.Title</a>
-          </p>
-        </div>
-      }
-      
-    </div>
-  </div>
+  <div class="col-sm-3 px-3">&nbsp;</div>
 
 }
