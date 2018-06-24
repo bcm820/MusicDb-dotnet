@@ -23,7 +23,11 @@
     </div>
     <div class="col-sm-3 px-5" style="text-align: right">
       @if (ViewBag.Title == "Index") {
-        <a href="/register">Register</a>
+        @if (ViewBag.User != null) {
+          <h5>Hello, @ViewBag.User!</h5>
+        } else {
+          <a href="/register">Register</a>
+        }
       } else {
         <a href="/">Back to Index</a>
       }

@@ -16,6 +16,7 @@ namespace MusicDb.Controllers {
     [Route("")]
     public IActionResult Index() {
       ViewBag.Artists = Db.Artists.OrderBy(artist => artist.Name).ToList();
+      ViewBag.User = HttpContext.Session.GetString("username");
       return View();
     }
 
@@ -29,6 +30,8 @@ namespace MusicDb.Controllers {
         Username = account.Username,
         Password = account.Password
       };
+      Db.Users.Add(NewUser);
+      Db.SaveChanges();
       HttpContext.Session.SetString("username", NewUser.Username);
       return RedirectToAction("Index");
     }
