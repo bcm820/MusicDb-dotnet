@@ -19,6 +19,21 @@ namespace MusicDb.Controllers {
     private Context Db;
     public ArtistController(Context context) => Db = context;
 
+    static List<Song> GetSongsList(dynamic songs, bool results) {
+      var SongsList = new List<Song>();
+      foreach (var song in songs) {
+        var s = results ? song.result : song;
+        SongsList.Add(new Song {
+          Id = s.id,
+          Title = s.title_with_featured,
+          Url = s.url,
+          ArtistName = s.primary_artist.name,
+          ArtistUID = s.primary_artist.id
+        });
+      }
+      return SongsList;
+    }
+
     // Data fetched from API proxy (stored in session in ApiController)
     // will be deserialized into an ExpandoObject which is a unique C#
     // type that bypasses compile time type checks (assumes any op works).
@@ -26,45 +41,53 @@ namespace MusicDb.Controllers {
 
     [Route("songs")]
     public IActionResult ShowSearchResults(string text) {
+
+      // Get song data from search API call
       var ResponseString = HttpContext.Session.GetString($"search{text}");
       if (ResponseString == null)
         return RedirectToAction("GetSearchResults", "Api", new { text = text });
+
+      // Deserialize into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
         (ResponseString, new ExpandoObjectConverter());
       if (((IDictionary<string, object>)ResponseObj).ContainsKey("error"))
         return Json("Unable to fulfill request.");
-      dynamic SongObjects = ResponseObj.response.hits;
-      var Songs = new List<Song>();
-      foreach (var song in SongObjects) Songs.Add(new Song {
-        Id = song.result.id,
-        Title = song.result.title_with_featured,
-        Url = song.result.url,
-        ArtistName = song.result.primary_artist.name,
-        ArtistUID = song.result.primary_artist.id
-      });
+
+      // Map song data to Song model, map to list, store in session
+      List<Song> Songs = GetSongsList(ResponseObj.response.hits, true);
       HttpContext.Session.SetDynamic($"search{text}", Songs);
+
       return RedirectToAction("Results", "View", new { text = text });
     }
 
     [Route("artists/{id}")]
     public IActionResult ShowArtist(string id) {
+
+      // Check database for artist
+      // If found, redirect to fetch artist's songs
       var DbArtists = Db.Artists
         .Where(a => a.Id == Convert.ToInt64(id))
-        .Include(a => a.Songs)
         .Include(a => a.Likes)
         .ToList();
       if (DbArtists.Count != 0) {
         var FoundArtist = DbArtists.Single();
         HttpContext.Session.SetDynamic($"artistprofile{id}", FoundArtist);
-        return RedirectToAction("Artist", "View", new { id = id });
+        return RedirectToAction("GetArtistSongs", "Api", new { id = id });
       }
+
+      // Get data from artist API call
       var ResponseString = HttpContext.Session.GetString($"artist{id}");
       if (ResponseString == null)
         return RedirectToAction("GetArtistInfo", "Api", new { id = id });
+
+      // Deserialize into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
         (ResponseString, new ExpandoObjectConverter());
       if (((IDictionary<string, object>)ResponseObj).ContainsKey("error"))
         return Json("Unable to fulfill request.");
+
+      // Map artist data to Artist model, store in DB
+      // Then redirect to fetch artist songs
       var ArtistData = ResponseObj.response.artist;
       var Artist = new Artist {
         Id = ArtistData.id,
@@ -76,47 +99,28 @@ namespace MusicDb.Controllers {
       };
       Db.Artists.Add(Artist);
       Db.SaveChanges();
-      return RedirectToAction("ShowArtist", new { id = id });
+      return RedirectToAction("GetArtistSongs", "Api", new { id = id });
     }
 
     [Route("artists/{id}/songs")]
     public IActionResult ShowArtistSongs(string id) {
+
+      // Get data from artist's songs API call
       var ResponseString = HttpContext.Session.GetString($"songs{id}");
       if (ResponseString == null)
         return RedirectToAction("GetArtistSongs", "Api", new { id = id });
+
+      // Deserialize into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
         (ResponseString, new ExpandoObjectConverter());
       if (((IDictionary<string, object>)ResponseObj).ContainsKey("error"))
         return Json("Unable to fulfill request.");
-      dynamic SongObjects = ResponseObj.response.songs;
-      var Songs = new List<Song>();
-      foreach (var songData in SongObjects) {
-        long songId = songData.id;
-        // var DbArtist = Db.Artists
-        //   .Where(a => a.Id == songData.primary_artist.id)
-        //   .Include(a => a.Songs)
-        //   .ToList();
-        var DbSongs = Db.Songs
-          .Where(s => s.Id == songId)
-          .Include(s => s.Artist)
-          .Include(s => s.Likes)
-          .ToList();
-        if (DbSongs.Count != 0) Songs.Add(DbSongs.Single());
-        else {
-          var Song = new Song {
-            Id = songData.id,
-            Title = songData.title_with_featured,
-            Url = songData.url,
-            ArtistName = songData.primary_artist.name,
-            ArtistUID = songData.primary_artist.id
-          };
-          Songs.Add(Song);
-          Db.Songs.Add(Song);
-          Db.SaveChanges();
-        }
-      }
-      return View("songs");
-      // return Json(Songs);
+
+      // Map song data to Song model, map to list, store in session
+      List<Song> Songs = GetSongsList(ResponseObj.response.songs, false);
+      HttpContext.Session.SetDynamic($"artistsongs{id}", Songs);
+
+      return RedirectToAction("Artist", "View", new { id = id });
     }
 
   }
