@@ -7,7 +7,7 @@
   var Songs = ViewBag.Songs;
   
   Func<object,bool> notEmpty = str => str != null && str.ToString().Length > 1;
-  var ProfileLink = $"/artists/{Artist.Id}/profile";
+  var ProfileLink = $"/artists/{Artist.Id}";
   var InstagramLink = $"http://www.instagram.com/{Artist.Instagram}";
   var TwitterLink = $"http://www.twitter.com/{Artist.Twitter}";
 

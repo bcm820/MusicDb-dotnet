@@ -6,7 +6,7 @@
 
   <div class="col-sm-6 px-3">
     @foreach (var artist in ViewBag.Artists) {
-      var ProfileLink = $"/artists/{artist.Id}/profile";
+      var ProfileLink = $"/artists/{artist.Id}";
       <a href="@ProfileLink">
         <img src=@artist.Image
           title="@artist.Name" 
