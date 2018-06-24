@@ -9,11 +9,9 @@ namespace MusicDb.Models {
     public string Image { get; set; }
     public string Instagram { get; set; }
     public string Twitter { get; set; }
-    public List<Song> Songs { get; set; }
     public List<ArtistLike> Likes { get; set; }
 
     public Artist() {
-      Songs = new List<Song>();
       Likes = new List<ArtistLike>();
     }
 
