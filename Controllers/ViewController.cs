@@ -40,7 +40,7 @@ namespace MusicDb.Controllers {
     public IActionResult Results(string text) {
       var Results = HttpContext.Session.GetDynamic($"search{text}");
       if (Results == null)
-        return RedirectToAction("GetSearchResults", "Api", new { text = text });
+        return RedirectToAction("ShowSearchResults", "Artist", new { text = text });
       ViewBag.Results = Results;
       return View("results");
     }
@@ -51,9 +51,9 @@ namespace MusicDb.Controllers {
       var Artist = HttpContext.Session.GetDynamic($"artistprofile{id}");
       var Songs = HttpContext.Session.GetDynamic($"artistsongs{id}");
       if (Artist == null)
-        return RedirectToAction("GetArtistInfo", "Api", new { id = id });
+        return RedirectToAction("ShowArtist", "Artist", new { id = id });
       if (Songs == null)
-        return RedirectToAction("GetArtistSongs", "Api", new { id = id });
+        return RedirectToAction("ShowArtistSongs", "Artist", new { id = id });
       ViewBag.Artist = Artist;
       ViewBag.Songs = Songs;
       return View("artist");

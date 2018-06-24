@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using MusicDb.Utilities;
 
 using System;
+using System.Threading.Tasks;
 using System.Dynamic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -11,13 +11,18 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using MusicDb.Models;
+using MusicDb.Utilities;
 
 namespace MusicDb.Controllers {
 
   public class ArtistController : Controller {
 
     private Context Db;
-    public ArtistController(Context context) => Db = context;
+    private ArtistProxy Proxy;
+    public ArtistController(Context context, ArtistProxy proxy) {
+      Db = context;
+      Proxy = proxy;
+    }
 
     static List<Song> GetSongsList(dynamic songs, bool results) {
       var SongsList = new List<Song>();
@@ -34,18 +39,15 @@ namespace MusicDb.Controllers {
       return SongsList;
     }
 
-    // Data fetched from API proxy (stored in session in ApiController)
-    // will be parsed into an ExpandoObject which is a unique C#
-    // type that bypasses compile time type checks (assumes any op works).
-    // This allows free access to deep-nested values via dot notation.
+    // Data fetched from API proxy is parsed into an ExpandoObject,
+    // a unique C# type that bypasses compile time type checks,
+    // allowing free access to deep-nested values via dot notation.
 
     [Route("songs")]
-    public IActionResult ShowSearchResults(string text) {
+    async public Task<IActionResult> ShowSearchResults(string text) {
 
       // Get song data from search API call
-      var ResponseString = HttpContext.Session.GetString($"search{text}");
-      if (ResponseString == null)
-        return RedirectToAction("GetSearchResults", "Api", new { text = text });
+      var ResponseString = await Proxy.GetSearchResults(text);
 
       // Parse into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
@@ -61,7 +63,7 @@ namespace MusicDb.Controllers {
     }
 
     [Route("artists/{id}")]
-    public IActionResult ShowArtist(string id) {
+    async public Task<IActionResult> ShowArtist(string id) {
 
       // Check database for artist
       // If found, redirect to fetch artist's songs
@@ -72,13 +74,11 @@ namespace MusicDb.Controllers {
       if (DbArtists.Count != 0) {
         var FoundArtist = DbArtists.Single();
         HttpContext.Session.SetDynamic($"artistprofile{id}", FoundArtist);
-        return RedirectToAction("GetArtistSongs", "Api", new { id = id });
+        return RedirectToAction("ShowArtistSongs", new { id = id });
       }
 
       // Get data from artist API call
-      var ResponseString = HttpContext.Session.GetString($"artist{id}");
-      if (ResponseString == null)
-        return RedirectToAction("GetArtistInfo", "Api", new { id = id });
+      var ResponseString = await Proxy.GetArtistInfo(id);
 
       // Parse into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
@@ -100,16 +100,14 @@ namespace MusicDb.Controllers {
       Db.Artists.Add(Artist);
       Db.SaveChanges();
       HttpContext.Session.SetDynamic($"artistprofile{id}", Artist);
-      return RedirectToAction("GetArtistSongs", "Api", new { id = id });
+      return RedirectToAction("ShowArtistSongs", new { id = id });
     }
 
     [Route("artists/{id}/songs")]
-    public IActionResult ShowArtistSongs(string id) {
+    async public Task<IActionResult> ShowArtistSongs(string id) {
 
       // Get data from artist's songs API call
-      var ResponseString = HttpContext.Session.GetString($"songs{id}");
-      if (ResponseString == null)
-        return RedirectToAction("GetArtistSongs", "Api", new { id = id });
+      var ResponseString = await Proxy.GetArtistSongs(id);
 
       // Deserialize into ExpandoObject, check for an error
       dynamic ResponseObj = JsonConvert.DeserializeObject<ExpandoObject>
