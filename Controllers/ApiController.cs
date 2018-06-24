@@ -5,6 +5,9 @@ using MusicDb.Utilities;
 
 namespace MusicDb.Controllers {
 
+  // API Controller uses the API Proxier utility class to make async API calls.
+  // Responses retain their string format and are parsed in the Artist Controller.
+
   public class ApiController : Controller {
 
     private readonly ApiProxier Proxy;
