@@ -34,7 +34,7 @@ namespace MusicDb.Controllers {
       _context.Users.Add(NewUser);
       _context.SaveChanges();
       HttpContext.Session.SetString("username", NewUser.Username);
-      return RedirectToAction("Index");
+      return RedirectToAction("Index", "Artist");
     }
 
   }

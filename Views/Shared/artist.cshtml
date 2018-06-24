@@ -11,18 +11,18 @@
   var InstagramLink = $"http://www.instagram.com/{Artist.Instagram}";
   var TwitterLink = $"http://www.twitter.com/{Artist.Twitter}";
 
-  <div class="col-sm-3 px-3">
+  <div class="col-sm-4 px-3">
     <div><img src=@Artist.Image width="100%" /></div>
   </div>
 
-  <div class="col-sm-3 px-3">
-    <h4>Songs</h4>
+  <div class="col-sm-4 px-3">
+    <h4>Top 10 Songs</h4>
     @foreach (var song in Songs) {
       <p><a href=@song.Url>@song.Title</a></p>
     }
   </div>
 
-  <div class="col-sm-3 px-3">
+  <div class="col-sm-4 px-3">
     <h4>Links</h4>
     <a href=@Artist.Url>Genius</a>
     @if (notEmpty(Artist.Instagram)) { <br/><a href=@InstagramLink>Instagram</a> }

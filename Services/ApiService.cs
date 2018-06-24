@@ -29,7 +29,7 @@ namespace MusicDb.Services {
     }
 
     async public Task<string> GetArtistSongs(string id) {
-      var Url = $"/artists/{id}/songs?sort=popularity&per_page=50";
+      var Url = $"/artists/{id}/songs?sort=popularity&per_page=10";
       return await GetAsync("Search", Url);
     }
 

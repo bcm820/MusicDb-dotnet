@@ -20,23 +20,10 @@
       } else {
         <h2>@ViewBag.Title</h2>
       }
+      <hr/>
+      <div class="row">@RenderBody()</div>
     </div>
-    <div class="col-sm-3 px-5" style="text-align: right">
-      @if (ViewBag.Title == "Index") {
-        @if (ViewBag.User != null) {
-          <h5>Hello, @ViewBag.User!</h5>
-        } else {
-          <a href="/register">Register</a>
-        }
-      } else {
-        <a href="/">Back to Index</a>
-      }
-    </div>
-  </div>
-
-  <div class="row p-3">
-    @RenderBody()
-    <div class="col-sm-3 px-3">
+    <div class="col-sm-3 px-5">
       <div class="input-group mb-3">
         <form action="/search" method="POST">
           <div class="input-group-append">
@@ -45,6 +32,15 @@
           </div>
         </form>
       </div>
+      @if (ViewBag.Title == "Index") {
+        @if (ViewBag.User != null) {
+          <span>Hello, @ViewBag.User!</span>
+        } else {
+          <a href="/register">Register</a>
+        }
+      } else {
+        <a href="/">Back to Index</a>
+      }
     </div>
   </div>
 
